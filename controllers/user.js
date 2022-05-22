@@ -10,7 +10,7 @@ router.get('/', async (req,res) => {
     }
 })
 
-router.get('/:_id', async (req, res) => {
+router.get('/id/:_id', async (req, res) => {
     try {
         const { _id } = req.params
         const user = await User.findOne({ _id })
@@ -35,7 +35,7 @@ router.get('/username/:username', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params
-        const user = await User.findOneAndDelete({ id })
+        const user = await User.findOneAndDelete({ _id: id })
         
         res.json(user)
     } catch (error) {
