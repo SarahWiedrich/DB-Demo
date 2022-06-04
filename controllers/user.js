@@ -1,9 +1,11 @@
 const router = require('express').Router()
 const User = require('../models/user')
+const Instrument = require('../models/instruments')
 
-router.get('/', async (req,res) => {
+router.get('/', async (req, res) => {
     try {
-        const users = await User.find()
+        const users = await User.find().populate('instruments')
+
         res.json(users)
     } catch (error) {
         res.status(500).json({ "message": String(error) })
@@ -44,8 +46,9 @@ router.delete('/:id', async (req, res) => {
 })
 
 router.post('/create', async (req, res) => {
-    try{
+    try {
         const { username, password, age, name } = req.body
+        console.log(username, password)
         const createdUser = await new User({
             username,
             password,
@@ -53,9 +56,24 @@ router.post('/create', async (req, res) => {
             name
         }).save()
 
-        res.send(createdUser)
+        res.json({ 'message': 'user created' })
     } catch (error) {
         res.status(400).json({ "message": String(error) })
+    }
+})
+
+router.put('/add/instrument/:id', async(req, res) => {
+    try {
+        const { instrumentId } = req.body
+        const { id } = req.params 
+
+        const user = await User.findById(id)
+        user.instruments.push(instrumentId)
+        let updatedUser = await User.findByIdAndUpdate(id, user)
+
+        res.send(updatedUser)
+    } catch (error) {
+        res.status(500).json({ 'message': 'unable to add instrument' })
     }
 })
 
